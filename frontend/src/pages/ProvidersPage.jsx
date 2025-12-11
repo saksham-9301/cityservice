@@ -1,24 +1,70 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { getProviders } from '../services/apiService';
+import { getProviders, getCategories, getProvidersByCategory } from '../services/apiService';
 import BookingModal from '../components/BookingModal';
 
 export default function ProvidersPage() {
+  const [searchParams] = useSearchParams();
   const [providers, setProviders] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedProvider, setSelectedProvider] = useState(null);
   const [showBookingModal, setShowBookingModal] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('all');
 
   useEffect(() => {
-    fetchProviders();
+    // Check if category is in URL query params
+    const categoryFromURL = searchParams.get('category');
+    if (categoryFromURL) {
+      setSelectedCategory(categoryFromURL);
+    } else {
+      fetchCategories();
+      fetchProviders();
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    fetchCategories();
   }, []);
+
+  useEffect(() => {
+    if (selectedCategory === 'all') {
+      fetchProviders();
+    } else {
+      fetchProvidersByCategory(selectedCategory);
+    }
+  }, [selectedCategory]);
+
+  const fetchCategories = async () => {
+    try {
+      const data = await getCategories();
+      setCategories(data);
+    } catch (err) {
+      console.error('Error fetching categories:', err);
+    }
+  };
 
   const fetchProviders = async () => {
     setLoading(true);
     setError('');
     try {
       const data = await getProviders();
+      setProviders(data);
+    } catch (err) {
+      setError('Failed to load providers');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchProvidersByCategory = async (categoryId) => {
+    setLoading(true);
+    setError('');
+    try {
+      const data = await getProvidersByCategory(categoryId);
       setProviders(data);
     } catch (err) {
       setError('Failed to load providers');
@@ -65,6 +111,41 @@ export default function ProvidersPage() {
           <p className="text-gray-600 text-lg">
             Find trusted professionals for your service needs
           </p>
+        </motion.div>
+
+        {/* Category Filter */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8 flex flex-wrap gap-3 justify-center"
+        >
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setSelectedCategory('all')}
+            className={`px-4 py-2 rounded-lg font-semibold transition ${
+              selectedCategory === 'all'
+                ? 'bg-blue-600 text-white'
+                : 'bg-white text-gray-700 border border-gray-300 hover:border-blue-500'
+            }`}
+          >
+            All Services
+          </motion.button>
+          {categories.map((category) => (
+            <motion.button
+              key={category._id}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setSelectedCategory(category._id)}
+              className={`px-4 py-2 rounded-lg font-semibold transition ${
+                selectedCategory === category._id
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-white text-gray-700 border border-gray-300 hover:border-blue-500'
+              }`}
+            >
+              {category.name}
+            </motion.button>
+          ))}
         </motion.div>
 
         {/* Loading State */}

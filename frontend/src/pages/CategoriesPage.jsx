@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { getCategories, searchCategories } from '../services/apiService';
+import { useNavigate } from 'react-router-dom';
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState([]);
@@ -8,6 +9,7 @@ export default function CategoriesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   // Fetch all categories on component mount
   useEffect(() => {
@@ -44,6 +46,11 @@ export default function CategoriesPage() {
         console.error('Search error:', err);
       }
     }
+  };
+
+  const handleViewProviders = (categoryId, categoryName) => {
+    // Navigate to providers page with category filter
+    navigate(`/providers?category=${categoryId}&name=${categoryName}`);
   };
 
   const containerVariants = {
@@ -158,9 +165,10 @@ export default function CategoriesPage() {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
+                    onClick={() => handleViewProviders(category._id, category.name)}
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition"
                   >
-                    View Providers
+                    View Providers ({category.providerCount || 0})
                   </motion.button>
                 </div>
               </motion.div>

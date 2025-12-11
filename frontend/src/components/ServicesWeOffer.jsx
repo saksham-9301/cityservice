@@ -1,127 +1,59 @@
 import { motion } from 'framer-motion'
+import { useState, useEffect } from 'react'
+import { getCategories } from '../services/apiService'
+import { useNavigate } from 'react-router-dom'
 
-const services = [
-  {
-    id: 1,
-    title: 'Cleaning',
-    desc: 'Home & office deep cleaning, sanitization and maintenance.',
-    color: 'from-green-400 to-green-600',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 7c0 3.866 3.134 7 7 7s7-3.134 7-7" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M21 7v4m0 0l-3-3m3 3l-3 3" />
-      </svg>
-    ),
-  },
-  {
-    id: 2,
-    title: 'Plumber',
-    desc: 'Fix leaks, installs, drainage and pipe replacement.',
-    color: 'from-blue-400 to-blue-600',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v7m0 0l3-3m-3 3l-3-3" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M7 13v6a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-6" />
-      </svg>
-    ),
-  },
-  {
-    id: 3,
-    title: 'Electrician',
-    desc: 'Wiring, fixtures, power issues and emergency repairs.',
-    color: 'from-yellow-400 to-yellow-600',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-      </svg>
-    ),
-  },
-  {
-    id: 4,
-    title: 'Painter',
-    desc: 'Interior & exterior painting, color consultation.',
-    color: 'from-pink-400 to-pink-600',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 21v-4a4 4 0 014-4h10" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M21 3l-6 6" />
-      </svg>
-    ),
-  },
-  {
-    id: 5,
-    title: 'Carpentry',
-    desc: 'Custom furniture, repairs and fittings.',
-    color: 'from-indigo-400 to-indigo-600',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 7h18M6 7v10a2 2 0 002 2h8a2 2 0 002-2V7" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M14 3v4" />
-      </svg>
-    ),
-  },
-   {
-    id: 6,
-    title: 'Cleaning',
-    desc: 'Home & office deep cleaning, sanitization and maintenance.',
-    color: 'from-green-400 to-green-600',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 7c0 3.866 3.134 7 7 7s7-3.134 7-7" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M21 7v4m0 0l-3-3m3 3l-3 3" />
-      </svg>
-    ),
-  },
-  {
-    id: 2,
-    title: 'Plumber',
-    desc: 'Fix leaks, installs, drainage and pipe replacement.',
-    color: 'from-blue-400 to-blue-600',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v7m0 0l3-3m-3 3l-3-3" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M7 13v6a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-6" />
-      </svg>
-    ),
-  },
-  {
-    id: 3,
-    title: 'Electrician',
-    desc: 'Wiring, fixtures, power issues and emergency repairs.',
-    color: 'from-yellow-400 to-yellow-600',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-      </svg>
-    ),
-  },
-  {
-    id: 4,
-    title: 'Painter',
-    desc: 'Interior & exterior painting, color consultation.',
-    color: 'from-pink-400 to-pink-600',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 21v-4a4 4 0 014-4h10" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M21 3l-6 6" />
-      </svg>
-    ),
-  },
-  {
-    id: 5,
-    title: 'Carpentry',
-    desc: 'Custom furniture, repairs and fittings.',
-    color: 'from-indigo-400 to-indigo-600',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 7h18M6 7v10a2 2 0 002 2h8a2 2 0 002-2V7" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M14 3v4" />
-      </svg>
-    ),
-  },
-]
+// Icon mapping for services
+const iconMap = {
+  '🧹': 'Cleaning',
+  '🔧': 'Plumbing',
+  '⚡': 'Electrical',
+  '🎨': 'Painting',
+  '🪚': 'Carpentry',
+  '❄️': 'HVAC',
+  '🌿': 'Landscaping',
+  '🐜': 'Pest Control'
+}
+
+// Color mapping for different service types
+const colorMap = {
+  'Cleaning': 'from-green-400 to-green-600',
+  'Plumbing': 'from-blue-400 to-blue-600',
+  'Electrical': 'from-yellow-400 to-yellow-600',
+  'Painting': 'from-pink-400 to-pink-600',
+  'Carpentry': 'from-indigo-400 to-indigo-600',
+  'HVAC': 'from-cyan-400 to-cyan-600',
+  'Landscaping': 'from-lime-400 to-lime-600',
+  'Pest Control': 'from-red-400 to-red-600'
+}
 
 export default function ServicesWeOffer() {
+  const [services, setServices] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    fetchCategories()
+  }, [])
+
+  const fetchCategories = async () => {
+    try {
+      setLoading(true)
+      const data = await getCategories()
+      setServices(data)
+    } catch (err) {
+      setError('Failed to load services')
+      console.error('Error fetching categories:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSeeProviders = (categoryId, categoryName) => {
+    navigate(`/providers?category=${categoryId}&name=${categoryName}`)
+  }
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -159,86 +91,105 @@ export default function ServicesWeOffer() {
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">Reliable, certified professionals at your doorstep. Book trusted services in minutes.</p>
         </motion.div>
 
+        {/* Loading State */}
+        {loading && (
+          <div className="flex justify-center items-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && !loading && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6 text-center">
+            {error}
+          </div>
+        )}
+
         {/* Service Cards Grid */}
-        <motion.div
-          className="grid grid-cols-3 md:grid-cols-3 gap-8"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-        >
-          {services.map((s) => (
-            <motion.article
-              key={s.id}
-              variants={cardVariants}
-              whileHover={{ y: -10 }}
-              className="group relative bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transform transition duration-500 cursor-pointer"
-            >
-              {/* Gradient background */}
-              <div className="absolute inset-0 bg-linear-to-br opacity-0 group-hover:opacity-5 transition duration-500 pointer-events-none" />
+        {!loading && services.length > 0 && (
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+          >
+            {services.map((s) => (
+              <motion.article
+                key={s._id}
+                variants={cardVariants}
+                whileHover={{ y: -10 }}
+                className="group relative bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transform transition duration-500 cursor-pointer"
+              >
+                {/* Gradient background */}
+                <div className="absolute inset-0 bg-linear-to-br opacity-0 group-hover:opacity-5 transition duration-500 pointer-events-none" />
 
-              {/* Card content */}
-              <div className="p-8 h-full flex flex-col">
-                {/* Icon section with pulse animation */}
-                <motion.div
-                  whileHover={{ scale: 1.15, rotate: 5 }}
-                  transition={{ type: 'spring', stiffness: 300 }}
-                  className={`flex items-center justify-center w-16 h-16 rounded-xl bg-linear-to-br ${s.color} group-hover:scale-110 transform transition duration-500 mb-4`}
-                >
-                  {s.icon}
-                </motion.div>
-
-                {/* Content section */}
-                <div className="flex-1">
-                  <motion.h3
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    transition={{ delay: 0.2, duration: 0.4 }}
-                    className="text-2xl font-bold text-gray-900 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-linear-to-r group-hover:from-blue-600 group-hover:to-purple-600 transition duration-300"
+                {/* Card content */}
+                <div className="p-8 h-full flex flex-col">
+                  {/* Icon section with pulse animation */}
+                  <motion.div
+                    whileHover={{ scale: 1.15, rotate: 5 }}
+                    transition={{ type: 'spring', stiffness: 300 }}
+                    className={`flex items-center justify-center w-16 h-16 rounded-xl bg-linear-to-br ${colorMap[s.name] || 'from-blue-400 to-blue-600'} group-hover:scale-110 transform transition duration-500 mb-4 text-3xl`}
                   >
-                    {s.title}
-                  </motion.h3>
-                  <motion.p
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    transition={{ delay: 0.3, duration: 0.4 }}
-                    className="text-gray-600 mt-3 leading-relaxed"
-                  >
-                    {s.desc}
-                  </motion.p>
-                </div>
+                    {s.icon}
+                  </motion.div>
 
-                {/* Footer section */}
-                <div className="mt-6 flex items-center justify-between pt-4 border-t border-gray-200 group-hover:border-gray-300 transition">
-                  <div>
-                    <p className="text-sm text-gray-500">Starting at</p>
-                    <motion.p
-                      whileHover={{ scale: 1.1 }}
-                      className="text-xl font-bold text-gray-900"
+                  {/* Content section */}
+                  <div className="flex-1">
+                    <motion.h3
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      transition={{ delay: 0.2, duration: 0.4 }}
+                      className="text-2xl font-bold text-gray-900 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-linear-to-r group-hover:from-blue-600 group-hover:to-purple-600 transition duration-300"
                     >
-                      $20
+                      {s.name}
+                    </motion.h3>
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      transition={{ delay: 0.3, duration: 0.4 }}
+                      className="text-gray-600 mt-3 leading-relaxed"
+                    >
+                      {s.description}
                     </motion.p>
                   </div>
-                  <motion.button
-                    whileHover={{ scale: 1.08 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="bg-linear-to-r from-blue-600 to-blue-700 text-white font-semibold px-6 py-2 rounded-lg hover:from-blue-700 hover:to-blue-800 hover:shadow-lg transition duration-300"
-                  >
-                    Book Now
-                  </motion.button>
-                </div>
-              </div>
 
-              {/* Bottom accent bar */}
-              <motion.div
-                initial={{ scaleX: 0 }}
-                whileInView={{ scaleX: 1 }}
-                transition={{ delay: 0.5, duration: 0.6, origin: 'left' }}
-                className={`h-1 bg-linear-to-r ${s.color} transform scale-x-0 group-hover:scale-x-100 transition duration-500 origin-left`}
-              />
-            </motion.article>
-          ))}
-        </motion.div>
+                  {/* Footer section - See Providers Button */}
+                  <div className="mt-6 pt-4 border-t border-gray-200 group-hover:border-gray-300 transition">
+                    <motion.button
+                      whileHover={{ scale: 1.08 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => handleSeeProviders(s._id, s.name)}
+                      className="w-full bg-linear-to-r from-blue-600 to-blue-700 text-white font-semibold px-6 py-2 rounded-lg hover:from-blue-700 hover:to-blue-800 hover:shadow-lg transition duration-300"
+                    >
+                      See Providers
+                    </motion.button>
+                  </div>
+                </div>
+
+                {/* Bottom accent bar */}
+                <motion.div
+                  initial={{ scaleX: 0 }}
+                  whileInView={{ scaleX: 1 }}
+                  transition={{ delay: 0.5, duration: 0.6, origin: 'left' }}
+                  className={`h-1 bg-linear-to-r ${colorMap[s.name] || 'from-blue-400 to-blue-600'} transform scale-x-0 group-hover:scale-x-100 transition duration-500 origin-left`}
+                />
+              </motion.article>
+            ))}
+          </motion.div>
+        )}
+
+        {/* Empty State */}
+        {!loading && services.length === 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-12"
+          >
+            <p className="text-gray-600 text-lg">No services available</p>
+          </motion.div>
+        )}
       </div>
     </section>
   )

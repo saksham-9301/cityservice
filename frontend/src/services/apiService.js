@@ -24,6 +24,16 @@ export async function getCategories() {
   }
 }
 
+export async function getCategoryById(categoryId) {
+  try {
+    const response = await fetch(`${API_BASE}/categories/${categoryId}`);
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching category:', error);
+    return null;
+  }
+}
+
 export async function searchCategories(query) {
   try {
     const response = await fetch(`${API_BASE}/categories/search?name=${query}`);
@@ -48,6 +58,33 @@ export async function createCategory(categoryData) {
   }
 }
 
+export async function updateCategory(categoryId, categoryData) {
+  try {
+    const response = await fetch(`${API_BASE}/categories/${categoryId}`, {
+      method: 'PUT',
+      headers: getHeaders(true),
+      body: JSON.stringify(categoryData),
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('Error updating category:', error);
+    return { error: error.message };
+  }
+}
+
+export async function deleteCategory(categoryId) {
+  try {
+    const response = await fetch(`${API_BASE}/categories/${categoryId}`, {
+      method: 'DELETE',
+      headers: getHeaders(true),
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('Error deleting category:', error);
+    return { error: error.message };
+  }
+}
+
 // ============ SERVICE PROVIDERS APIS ============
 export async function getProviders() {
   try {
@@ -61,11 +98,33 @@ export async function getProviders() {
 
 export async function getProvidersByCategory(categoryId) {
   try {
-    const providers = await getProviders();
-    return providers.filter(p => p.categoryId?._id === categoryId);
+    const response = await fetch(`${API_BASE}/providers/category/${categoryId}`);
+    return await response.json();
   } catch (error) {
-    console.error('Error filtering providers:', error);
+    console.error('Error fetching providers by category:', error);
     return [];
+  }
+}
+
+export async function getProviderProfile(providerId) {
+  try {
+    const response = await fetch(`${API_BASE}/providers/profile/${providerId}`);
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching provider profile:', error);
+    return null;
+  }
+}
+
+export async function getMyProviderProfile() {
+  try {
+    const response = await fetch(`${API_BASE}/providers/my/profile`, {
+      headers: getHeaders(true),
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching my provider profile:', error);
+    return null;
   }
 }
 
@@ -79,6 +138,20 @@ export async function createProvider(providerData) {
     return await response.json();
   } catch (error) {
     console.error('Error creating provider:', error);
+    return { error: error.message };
+  }
+}
+
+export async function updateProvider(providerId, providerData) {
+  try {
+    const response = await fetch(`${API_BASE}/providers/${providerId}`, {
+      method: 'PUT',
+      headers: getHeaders(true),
+      body: JSON.stringify(providerData),
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('Error updating provider:', error);
     return { error: error.message };
   }
 }

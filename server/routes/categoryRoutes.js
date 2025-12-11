@@ -4,11 +4,20 @@ const auth = require("../middleware/authMiddleware");
 const {
   createCategory,
   getCategories,
+  getCategoryById,
   searchCategories,
+  updateCategory,
+  deleteCategory
 } = require("../controller/categoryController");
 
-router.post("/", auth, createCategory); // only logged-in users (admin ideally)
+// Public routes
 router.get("/", getCategories);
 router.get("/search", searchCategories);
+router.get("/:categoryId", getCategoryById);
+
+// Protected routes (admin only)
+router.post("/", auth, createCategory);
+router.put("/:categoryId", auth, updateCategory);
+router.delete("/:categoryId", auth, deleteCategory);
 
 module.exports = router;

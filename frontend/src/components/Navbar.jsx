@@ -160,9 +160,12 @@ export default function Navbar() {
                       setUser(null)
                       window.dispatchEvent(new Event('storage'))
                     }}
-                    className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold px-5 py-2 rounded-lg shadow-md hover:shadow-lg transition-all"
+                    className="flex items-center justify-center bg-red-600 hover:bg-red-700 text-white font-semibold p-2 rounded-lg shadow-md hover:shadow-lg transition-all"
+                    title="Logout"
                   >
-                    Logout
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3v-1m0-4V7a3 3 0 013-3h4a3 3 0 013 3v4" />
+                    </svg>
                   </button>
                 </div>
               ) : (
@@ -263,9 +266,12 @@ export default function Navbar() {
                   setUser(null)
                   window.dispatchEvent(new Event('storage'))
                 }}
-                className="w-full flex items-center gap-3 bg-red-600 text-white px-3 py-2 rounded-lg font-medium"
+                className="w-full flex items-center justify-center bg-red-600 text-white px-3 py-2 rounded-lg font-medium hover:bg-red-700"
+                title="Logout"
               >
-                Logout
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3v-1m0-4V7a3 3 0 013-3h4a3 3 0 013 3v4" />
+                </svg>
               </button>
             ) : (
               <Link

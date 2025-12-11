@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { createProvider, getCategories, getCurrentUser, isLoggedIn } from '../services/apiService';
+import { createProvider, updateProvider, getCategories, getMyProviderProfile, getCurrentUser, isLoggedIn } from '../services/apiService';
 import { useNavigate } from 'react-router-dom';
 
 export default function BecomeProviderPage() {
@@ -18,6 +18,8 @@ export default function BecomeProviderPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [existingProvider, setExistingProvider] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,8 +29,9 @@ export default function BecomeProviderPage() {
       return;
     }
 
-    // Fetch categories
+    // Fetch categories and check if user is already a provider
     fetchCategories();
+    checkExistingProvider();
   }, [navigate]);
 
   const fetchCategories = async () => {
@@ -37,6 +40,30 @@ export default function BecomeProviderPage() {
       setCategories(data);
     } catch (err) {
       console.error('Error fetching categories:', err);
+    }
+  };
+
+  const checkExistingProvider = async () => {
+    try {
+      const provider = await getMyProviderProfile();
+      if (provider && provider._id) {
+        setExistingProvider(provider);
+        setIsEditing(true);
+        // Pre-populate form with existing provider data
+        setFormData({
+          categoryId: provider.categoryId?._id || '',
+          price: provider.price || '',
+          experience: provider.experience || '',
+          description: provider.description || '',
+          availability: provider.availability || [
+            { day: 'Monday', timeStart: '09:00', timeEnd: '17:00' },
+            { day: 'Tuesday', timeStart: '09:00', timeEnd: '17:00' },
+          ],
+        });
+      }
+    } catch (err) {
+      console.error('No existing provider profile:', err);
+      setIsEditing(false);
     }
   };
 
@@ -88,22 +115,37 @@ export default function BecomeProviderPage() {
     setLoading(true);
 
     try {
-      const user = getCurrentUser();
       const providerData = {
-        ...formData,
-        userId: user._id,
+        categoryId: formData.categoryId,
         price: parseFloat(formData.price),
+        experience: formData.experience,
+        description: formData.description,
+        availability: formData.availability,
       };
 
-      const result = await createProvider(providerData);
-
-      if (result._id || result.message?.includes('created')) {
-        setSuccess('Profile created successfully!');
-        setTimeout(() => {
-          navigate('/dashboard');
-        }, 1500);
+      let result;
+      if (isEditing && existingProvider) {
+        // Update existing provider
+        result = await updateProvider(existingProvider._id, providerData);
+        if (result._id || result.message?.includes('updated')) {
+          setSuccess('Profile updated successfully!');
+          setTimeout(() => {
+            navigate('/dashboard');
+          }, 1500);
+        } else {
+          setError(result.message || result.error || 'Failed to update profile');
+        }
       } else {
-        setError(result.message || 'Failed to create profile');
+        // Create new provider
+        result = await createProvider(providerData);
+        if (result._id || result.message?.includes('created')) {
+          setSuccess('Profile created successfully!');
+          setTimeout(() => {
+            navigate('/dashboard');
+          }, 1500);
+        } else {
+          setError(result.message || result.error || 'Failed to create profile');
+        }
       }
     } catch (err) {
       setError('Error: ' + err.message);
@@ -122,10 +164,12 @@ export default function BecomeProviderPage() {
           className="text-center mb-12"
         >
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Become a Service Provider
+            {isEditing ? 'Update Your Provider Profile' : 'Become a Service Provider'}
           </h1>
           <p className="text-gray-600">
-            Create your professional profile and start earning
+            {isEditing 
+              ? 'Update your professional profile and services' 
+              : 'Create your professional profile and start earning'}
           </p>
         </motion.div>
 
@@ -310,7 +354,7 @@ export default function BecomeProviderPage() {
               disabled={loading}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition disabled:bg-gray-400"
             >
-              {loading ? 'Creating Profile...' : 'Create Profile'}
+              {loading ? (isEditing ? 'Updating Profile...' : 'Creating Profile...') : (isEditing ? 'Update Profile' : 'Create Profile')}
             </motion.button>
           </form>
         </motion.div>
