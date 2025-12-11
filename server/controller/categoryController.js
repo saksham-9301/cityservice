@@ -27,7 +27,7 @@ exports.searchCategories = async (req, res) => {
       return res.status(400).json({ message: "Search term is required" });
     }
 
-    const categories = await Category.find({
+    const categories = await ServiceCategory.find({
       $or: [
         { name: { $regex: name, $options: "i" } },
         { keywords: { $regex: name, $options: "i" } }
