@@ -42,6 +42,9 @@ export default function Login({ onSuccess }) {
           password: '',
         });
         
+        // Dispatch storage event to notify navbar of login
+        window.dispatchEvent(new Event('storage'));
+        
         // Call parent function after successful login
         if (onSuccess) {
           setTimeout(() => onSuccess(), 1500);

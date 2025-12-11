@@ -1,20 +1,29 @@
-import { useState } from 'react'
-<<<<<<< HEAD
-import { motion } from 'framer-motion'
-=======
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { isLoggedIn, getCurrentUser } from '../services/apiService'
->>>>>>> 7750bf83ff9f433a1327aba961a1ff6fb3d1d97e
 
 export default function Navbar() {
   const [query, setQuery] = useState('')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-<<<<<<< HEAD
-=======
   const [userLoggedIn, setUserLoggedIn] = useState(isLoggedIn())
   const [user, setUser] = useState(getCurrentUser())
->>>>>>> 7750bf83ff9f433a1327aba961a1ff6fb3d1d97e
+
+  // Update navbar when localStorage changes (after login/logout)
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setUserLoggedIn(isLoggedIn())
+      setUser(getCurrentUser())
+    }
+
+    // Listen for storage changes
+    window.addEventListener('storage', handleStorageChange)
+    
+    // Also check on component mount
+    handleStorageChange()
+
+    return () => window.removeEventListener('storage', handleStorageChange)
+  }, [])
 
   function onSearch(e) {
     e.preventDefault()
@@ -69,15 +78,9 @@ export default function Navbar() {
             initial="hidden"
             animate="visible"
           >
-<<<<<<< HEAD
-            <a href="/" className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:scale-110 transition-transform">
-              CityService
-            </a>
-=======
-            <Link to="/" className="text-3xl font-bold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:scale-110 transition-transform no-underline">
+            <Link to="/" className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:scale-110 transition-transform no-underline">
               CityService
             </Link>
->>>>>>> 7750bf83ff9f433a1327aba961a1ff6fb3d1d97e
           </motion.div>
 
           {/* Search Bar */}
@@ -107,40 +110,6 @@ export default function Navbar() {
           </form>
 
           {/* Desktop Navigation Links */}
-<<<<<<< HEAD
-          <motion.div className="hidden md:flex items-center space-x-4">
-            <motion.a
-              custom={1}
-              variants={linkVariants}
-              initial="hidden"
-              animate="visible"
-              href="/help"
-              className="flex items-center gap-2 text-gray-700 hover:text-blue-600 font-medium transition-colors px-3 py-2 rounded-lg hover:bg-blue-50"
-              whileHover={{ x: 2 }}
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              Help
-            </motion.a>
-            
-            <motion.a
-              custom={2}
-              variants={linkVariants}
-              initial="hidden"
-              animate="visible"
-              href="/support"
-              className="flex items-center gap-2 text-gray-700 hover:text-blue-600 font-medium transition-colors px-3 py-2 rounded-lg hover:bg-blue-50"
-              whileHover={{ x: 2 }}
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.172l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
-              </svg>
-              Support
-            </motion.a>
-            
-            <motion.a
-=======
           <motion.div className="hidden md:flex items-center space-x-2">
             <Link
               to="/categories"
@@ -175,23 +144,10 @@ export default function Navbar() {
             )}
             
             <motion.div
->>>>>>> 7750bf83ff9f433a1327aba961a1ff6fb3d1d97e
               custom={3}
               variants={linkVariants}
               initial="hidden"
               animate="visible"
-<<<<<<< HEAD
-              href="/auth"
-              whileHover={{ scale: 1.08 }}
-              whileTap={{ scale: 0.95 }}
-              className="flex items-center gap-2 bg-linear-to-r from-blue-600 to-purple-600 text-white font-semibold px-5 py-2 rounded-lg shadow-md hover:shadow-lg transition-all"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3v-1m0-4V7a3 3 0 013-3h6a3 3 0 013 3v4m-6-4h.01" />
-              </svg>
-              Login / SignUp
-            </motion.a>
-=======
             >
               {userLoggedIn ? (
                 <div className="flex items-center gap-4">
@@ -201,7 +157,8 @@ export default function Navbar() {
                       localStorage.removeItem('authToken')
                       localStorage.removeItem('user')
                       setUserLoggedIn(false)
-                      window.location.reload()
+                      setUser(null)
+                      window.dispatchEvent(new Event('storage'))
                     }}
                     className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold px-5 py-2 rounded-lg shadow-md hover:shadow-lg transition-all"
                   >
@@ -211,7 +168,7 @@ export default function Navbar() {
               ) : (
                 <Link
                   to="/auth"
-                  className="flex items-center gap-2 bg-linear-to-r from-blue-600 to-purple-600 text-white font-semibold px-5 py-2 rounded-lg shadow-md hover:shadow-lg transition-all no-underline"
+                  className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold px-5 py-2 rounded-lg shadow-md hover:shadow-lg transition-all no-underline"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3v-1m0-4V7a3 3 0 013-3h6a3 3 0 013 3v4m-6-4h.01" />
@@ -220,7 +177,6 @@ export default function Navbar() {
                 </Link>
               )}
             </motion.div>
->>>>>>> 7750bf83ff9f433a1327aba961a1ff6fb3d1d97e
           </motion.div>
 
           {/* Mobile Menu Button */}
@@ -266,37 +222,6 @@ export default function Navbar() {
               </motion.button>
             </form>
 
-<<<<<<< HEAD
-            <motion.a
-              href="/help"
-              className="flex items-center gap-3 text-gray-700 hover:text-blue-600 px-3 py-2 rounded-lg hover:bg-blue-50"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              Help
-            </motion.a>
-
-            <motion.a
-              href="/support"
-              className="flex items-center gap-3 text-gray-700 hover:text-blue-600 px-3 py-2 rounded-lg hover:bg-blue-50"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.172l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
-              </svg>
-              Support
-            </motion.a>
-
-            <motion.a
-              href="/auth"
-              className="flex items-center gap-3 bg-blue-600 text-white px-3 py-2 rounded-lg font-medium"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3v-1m0-4V7a3 3 0 013-3h6a3 3 0 013 3v4m-6-4h.01" />
-              </svg>
-              Login / SignUp
-            </motion.a>
-=======
             <Link
               to="/categories"
               className="flex items-center gap-3 text-gray-700 hover:text-blue-600 px-3 py-2 rounded-lg hover:bg-blue-50 no-underline"
@@ -335,7 +260,8 @@ export default function Navbar() {
                   localStorage.removeItem('authToken')
                   localStorage.removeItem('user')
                   setUserLoggedIn(false)
-                  window.location.reload()
+                  setUser(null)
+                  window.dispatchEvent(new Event('storage'))
                 }}
                 className="w-full flex items-center gap-3 bg-red-600 text-white px-3 py-2 rounded-lg font-medium"
               >
@@ -352,7 +278,6 @@ export default function Navbar() {
                 Login / SignUp
               </Link>
             )}
->>>>>>> 7750bf83ff9f433a1327aba961a1ff6fb3d1d97e
           </motion.div>
         )}
       </div>
